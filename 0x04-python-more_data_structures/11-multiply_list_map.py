@@ -1,7 +1,3 @@
-#!/usr/bin/python3
-def multiply_list_map(my_list=[], number=0):
-    return list(map(lambda i: i * number, my_list))
-
 """
 Write a function that returns a list with all values multiplied by a number without using any loops.
 
@@ -14,3 +10,7 @@ You are not allowed to import any module
 You have to use map
 Your file should be max 3 lines
 """
+
+#!/usr/bin/python3
+def mutiply_list_map(my_list=[], number=0):
+    return list(map(lambda i: i * number, my_list))
