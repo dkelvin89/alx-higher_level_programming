@@ -1,13 +1,12 @@
 #!/usr/bin/python3
-'''Prints all rows in the states table of a database with
-a name starting with 'N'.
+'''Prints all cities of a given state in a database.
 '''
 import sys
 import MySQLdb
 
 
 if __name__ == '__main__':
-    if len(sys.argv) >= 4:
+    if len(sys.argv) >= 5:
         db_connection = MySQLdb.connect(
             host='localhost',
             port=3306,
@@ -15,12 +14,15 @@ if __name__ == '__main__':
             passwd=sys.argv[2],
             db=sys.argv[3]
         )
+        state_name = sys.argv[4]
         cursor = db_connection.cursor()
         cursor.execute(
-            'SELECT * FROM states WHERE name IS NOT NULL AND' +
-            ' LEFT(CAST(name AS BINARY), 1) = "N" ORDER BY states.id ASC;'
+            'SELECT cities.name FROM cities' +
+            ' INNER JOIN states ON cities.state_id = states.id' +
+            ' WHERE CAST(states.name AS BINARY) = %s' +
+            ' ORDER BY cities.id ASC;',
+            [state_name]
         )
         results = cursor.fetchall()
-        for result in results:
-            print(result)
+        print(', '.join(map(lambda x: x[0], results)))
         db_connection.close()

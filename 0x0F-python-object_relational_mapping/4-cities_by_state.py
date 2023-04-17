@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-'''Prints all rows in the states table of a database.
+'''Prints all cities and their state in a database.
 '''
 import sys
 import MySQLdb
@@ -15,7 +15,11 @@ if __name__ == '__main__':
             db=sys.argv[3]
         )
         cursor = db_connection.cursor()
-        cursor.execute('SELECT * FROM states ORDER BY id ASC;')
+        cursor.execute(
+            'SELECT cities.id, cities.name, states.name FROM cities' +
+            ' INNER JOIN states ON cities.state_id = states.id' +
+            ' ORDER BY cities.id ASC;'
+        )
         results = cursor.fetchall()
         for result in results:
             print(result)
