@@ -1,30 +1,27 @@
 #!/usr/bin/python3
-'''Prints the id of a State object with a given name in a database.
-'''
+# Lists the State object with the name passed as argument
+# from the database hbtn_0e_6_usa.
+# Usage: ./10-model_state_my_get.py <mysql username> /
+#                                   <mysql password> /
+#                                   <database name>
+#                                   <state name searched>
 import sys
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from model_state import State
 
-from model_state import Base, State
+if __name__ == "__main__":
+    engine = create_engine("mysql+mysqldb://{}:{}@localhost/{}"
+                           .format(sys.argv[1], sys.argv[2], sys.argv[3]),
+                           pool_pre_ping=True)
+    Session = sessionmaker(bind=engine)
+    session = Session()
 
-
-if __name__ == '__main__':
-    if len(sys.argv) >= 5:
-        user = sys.argv[1]
-        pword = sys.argv[2]
-        db_name = sys.argv[3]
-        state_name = sys.argv[4]
-        chk = map(lambda x: x.isalpha() or (x in (' ', '%', '_')), state_name)
-        if not all(chk):
-            state_name = ''
-        DATABASE_URL = "mysql://{}:{}@localhost:3306/{}".format(
-            user, pword, db_name
-        )
-        engine = create_engine(DATABASE_URL)
-        Base.metadata.create_all(engine)
-        session = sessionmaker(bind=engine)()
-        result = session.query(State).filter(State.name == state_name).first()
-        if result is not None:
-            print('{}'.format(result.id))
-        else:
-            print('Not found')
+    found = False
+    for state in session.query(State):
+        if state.name == sys.argv[4]:
+            print("{}".format(state.id))
+            found = True
+            break
+    if found is False:
+        print("Not found")
